@@ -1,0 +1,30 @@
+version: "3"
+services:
+
+  # Application
+  web:
+    image: tomcat:7.0.90-jre8
+    ports:
+      - '8080:8080'
+
+  # PostgreSQL
+  db:
+    image: postgres
+    restart: always
+    volumes:
+    # add init SQL file
+      - "./init:/docker-entrypoint-initdb.d"
+
+  # client of PostgreSQL
+  pgweb:
+    image: sosedoff/pgweb
+    restart: always
+    ports:
+      - '8081:8081'
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+    depends_on:
+      - db
+
+# volumes:
+#   db-data:
